@@ -1,0 +1,125 @@
+---
+title: "HW3"
+author: "Syeda Nahar"
+date: "2022-10-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(shiny)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+
+```
+
+```{r setup, include=FALSE}
+
+data <- read.csv("https://raw.githubusercontent.com/charleyferrari/CUNY_DATA_608/master/module3/data/cleaned-cdc-mortality-1999-2010-2.csv")
+
+```
+
+```{r setup, include=FALSE}
+
+only2010 <- data %>% filter(Year == 2010)
+
+group2010 <- only2010 %>% group_by(ICD.Chapter)
+
+uc2010 <- only2010 %>% dplyr::select(ICD.Chapter) %>% unique()
+
+```
+
+```{r setup, include=FALSE}
+
+ui <- fluidPage(
+  titlePanel("Question 1"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("cause", "Cause of Death", choices = uc2010),
+    ),
+    mainPanel(
+      plotOutput("plot1")
+    )
+  )
+)
+
+```
+
+```{r setup, include=FALSE}
+
+server <- function(input, output) {
+  output$plot1 <- renderPlot({
+    plot1 <- group2010 %>% 
+      filter(ICD.Chapter == input$cause) %>% 
+      ggplot(aes(x = State, y = Crude.Rate)) +
+      geom_bar(stat = "identity") +
+      labs(x = "State", y = "Crude Rate", title = "Mortality Rates by State")
+    plot1
+  })
+}
+
+shinyApp(ui = ui, server = server)
+
+```
+
+```{r setup, include=FALSE}
+
+avg2010 <- only2010 %>% 
+  group_by(ICD.Chapter) %>% 
+  summarize(avg2010 = sum(Crude.Rate * Population) / sum(Population))
+
+new2010 <- only2010 %>% 
+  left_join(avg2010, by = "ICD.Chapter")
+
+new2010$State <- unlist(new2010$State)
+new2010$Crude.Rate <- unlist(new2010$Crude.Rate)
+
+```
+
+```{r setup, include=FALSE}
+
+ui <- fluidPage(
+  titlePanel("Question 2"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("cause", "Cause of Death", choices = uc2010),
+    ),
+    mainPanel(
+      plotOutput("plot1")
+    )
+  )
+)
+
+```
+
+```{r setup, include=FALSE}
+
+server <- function(input, output) {
+  output$plot1 <- renderPlot({
+    plot1 <- new2010 %>% 
+      filter(ICD.Chapter == input$cause) %>% 
+      ggplot(aes(x = State, y = Crude.Rate)) +
+      geom_bar(stat = "identity") +
+      geom_hline(yintercept = avg2010, color = "red") +
+      labs(x = "State", y = "Crude Rate", title = "Mortality Rates by State")
+    plot1
+  })
+}
+
+shinyApp(ui = ui, server = server)
+
+```
+```{r setup, include=FALSE}
+
+###install.packages('rsconnect')
+
+rsconnect::setAccountInfo(name='snahar',
+			  token='4948B88FCAC7760586989A66438F1C81',
+			  secret='ahuHwu9YCWPKPKdTTcwpCnzpGq3v8/cARMDkgfkB')
+
+library(rsconnect)
+deployApp()
+
+```
+
