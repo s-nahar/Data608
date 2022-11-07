@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Homework</title>
+	<script type="text/javascript"></script>
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+        <script src="https://d3js.org/d3.v5.min.js">
+    </script>
+</head>
+<body>
+    <p><b>Enter a word to reverse:</b></p>
+    <input type="text" id="textfield1">
+    <input type="button" value="Enter" onclick="revWord(textfield1.value)">
+    <p id="newWord"></p>
+
+    <!-- Function to reverse words -->
+    <script>
+    function revWord(word){
+        var word2 = ""
+        for (let i = word.length-1; i >= 0; i--){
+            word2 += word[i]
+        }
+        document.getElementById("newWord").innerHTML = "Your reversed word is " + word2
+    }
+    </script> 
+    
+    <p></p>
+    <p><b>Enter a number to get it's multiples</b></p>
+    <input type="text" id="textfield2">
+    <input type="button" value="Enter" onclick="createTable(textfield2.value)">
+
+    <!-- Function to create the table of multiples -->
+    <script>
+        function createTable(number){
+            var add_by = number
+            var field_name = "num"
+            for (let i = 1; i<=20; i++){
+                document.getElementById(field_name+i).innerHTML = number
+                number = +number + +add_by
+
+            }
+        }
+    </script>
+
+    <table>
+        <tr><td id="num1"></td><td id="num2"></td><td id="num3"></td><td id="num4"></td></tr>
+        <tr><td id="num5"></td><td id="num6"></td><td id="num7"></td><td id="num8"></td></tr>
+        <tr><td id="num9"></td><td id="num10"></td><td id="num11"></td><td id="num12"></td></tr>
+        <tr><td id="num13"></td><td id="num14"></td><td id="num15"></td><td id="num16"></td></tr>
+        <tr><td id="num17"></td><td id="num18"></td><td id="num19"></td><td id="num20"></td></tr>
+    </table>
+
+    <p><b>Enter the president's name</b></p>
+    <input id="pres_name" type="text"/>
+    <input type="button" value="Enter" onclick="update();"/>
+
+    <br>
+    <div id="presidents_table"></div>
+    
+    <!-- Function to read in csv file -->
+    <script>
+        d3.csv("https://raw.githubusercontent.com/charleyferrari/CUNY_DATA_608/master/module5/data/presidents.csv").then(function(data){
+            var p_table = "<table id='p_table'><thead><tr><th>Name</th><th>Height</th><th>Weight</th></tr></thead>";
+            data.forEach(function(pres) {
+                p_table += "<tr><td>" + pres['Name'] + '</td><td>' + pres['Height'] + '</td><td>' + pres['Weight'] + '</td></tr>';
+            });
+            $('#presidents_table').html(p_table + '</table>');
+        });			
+    </script>
+
+    <script>
+    
+        function update()
+        {
+            var value = document.getElementById("pres_name").value;
+            d3.csv("https://raw.githubusercontent.com/charleyferrari/CUNY_DATA_608/master/module5/data/presidents.csv").then(function(data){
+                var p_table = "<table id='p_table'><thead><tr><th>Name</th><th>Height</th><th>Weight</th></tr></thead>";
+                data.forEach(function(pres) {
+                    if(pres['Name'].toLowerCase().includes(value.toLowerCase()))
+                    {
+                        p_table += "<tr><td>" + pres['Name'] + '</td><td>' + pres['Height'] + '</td><td>' + pres['Weight'] + '</td></tr>';
+                    }
+                });
+                $('#presidents_table').html(p_table + '</table>');
+            });
+        }
+        
+    </script>
+
+</body>
+</html>
+
+
